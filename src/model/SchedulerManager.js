@@ -8,7 +8,8 @@ export default class SchedulerManager{
             return Object.assign({},event,{
                 eventStart : moment(event.eventStart),
                 eventStop : moment(event.eventStop),
-                index : index
+                index : index,
+                newEvent : false
             })
         });
 
@@ -18,10 +19,52 @@ export default class SchedulerManager{
         const linierMatrix = await this.makeLiniermatrix(partitionMatrix.slice());
         const calculatedDivisionMatrix = await this.calculateMaxDivision(linierMatrix.slice());
         const calculateWidthMatrix = await this.calculateWidth(calculatedDivisionMatrix.slice(),100,partitionMatrix.length);
-        const calculatedTopMatrix = await this.calculateTop(calculateWidthMatrix.slice(),100,today);
+        const sortedByOrderd = this.sortByOrder(calculateWidthMatrix);
+        const addOverlappingEventMatrix = await this.addOverlappingEvents(sortedByOrderd);
+        const calculatedMaxWidth = await this.calculateMaxWidth(addOverlappingEventMatrix.slice(),partitionMatrix.length);
+        const calculatedTopMatrix = await this.calculateTop(calculatedMaxWidth.slice(),100,today);
         const calculatedHeightMatrix = await this.calculateHeight(calculatedTopMatrix.slice(),100,today);
         callback(calculatedHeightMatrix,partitionMatrix.length);
     }
+
+    static calculateMaxWidth(addOverlappingEventMatrix,maxDivision){
+        return new Promise((resolve,reject)=>{
+            for(let i = 0; i < addOverlappingEventMatrix.length; i++){
+                const selectEvent = addOverlappingEventMatrix[i];
+                if(selectEvent.overlappingEvents.length){
+                    selectEvent.maxWidth = 100 * ( 1 / maxDivision);
+                }else{
+                    selectEvent.maxWidth = selectEvent.width;
+                }
+            }
+            resolve(addOverlappingEventMatrix);
+        })
+    }
+
+    static addOverlappingEvents(sortedByOrderd){
+
+        return new Promise((resolve,reject)=>{
+            for(let i = sortedByOrderd.length -1; i >= 0; i--){
+                const lowerOrderEvent = sortedByOrderd[i];
+                lowerOrderEvent.overlappingEvents = [];
+                for(let u = i; u < sortedByOrderd.length; u++){
+                    const higherOrderEvent = sortedByOrderd[u];
+                    if(lowerOrderEvent.eventStop.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop) || lowerOrderEvent.eventStart.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
+                        if(lowerOrderEvent.orderd < higherOrderEvent.orderd){
+                            lowerOrderEvent.overlappingEvents.push(higherOrderEvent);
+                        }
+                    }else if(higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)){
+                        if(lowerOrderEvent.orderd < higherOrderEvent.orderd){
+                            lowerOrderEvent.overlappingEvents.push(higherOrderEvent);
+                        }
+                    }
+                }
+            }
+            resolve(sortedByOrderd);
+        })
+    }
+
+
 
     static calculateHeight(calculatedTopMatrix,height,today){
         return new Promise((resolve,reject)=>{
@@ -41,11 +84,6 @@ export default class SchedulerManager{
                     const newHeight = calculatedTopMatrix[i].top - height;
                     calculatedTopMatrix[i].height = newHeight;
                 }
-                // console.log("title :" + calculatedTopMatrix[i].title);
-                // console.log("top :" +calculatedTopMatrix[i].top);
-                // console.log("height :" + calculatedTopMatrix[i].height);
-                // console.log("width :" + calculatedTopMatrix[i].width);
-                // console.log();
             }
             resolve(calculatedTopMatrix);
         })
@@ -71,9 +109,8 @@ export default class SchedulerManager{
     static calculateWidth(calculatedDivisionMatrix,width,maxDivide){
         return new Promise((resolve,reject)=>{
             for(let i = 0; i < calculatedDivisionMatrix.length; i++){
-                calculatedDivisionMatrix[i].width = width * (maxDivide - (calculatedDivisionMatrix[i].maxDivision - 1)) / maxDivide;
+                calculatedDivisionMatrix[i].width = width * ((maxDivide - (calculatedDivisionMatrix[i].maxDivision-1)) / maxDivide);
             }
-        
             resolve(calculatedDivisionMatrix);
         })
     }
@@ -84,26 +121,27 @@ export default class SchedulerManager{
                 let higherOrderEvent = linierMatrix[i];
                 for(let u = i -1; u >= 0; u--){
                     let lowerOrderEvent = linierMatrix[u];
-                    if(higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || lowerOrderEvent.eventStart.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
+                    if(higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)){
                         if(higherOrderEvent.maxDivision > lowerOrderEvent.maxDivision){
                             lowerOrderEvent.maxDivision = higherOrderEvent.maxDivision;
                         }
-                    }else if(higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || lowerOrderEvent.eventStop.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
+                    }else if(lowerOrderEvent.eventStart.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop) || lowerOrderEvent.eventStop.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
                         if(higherOrderEvent.maxDivision > lowerOrderEvent.maxDivision){
                             lowerOrderEvent.maxDivision = higherOrderEvent.maxDivision;
                         }
                     }
                 }
             }
+            // higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)
             for(let i = 0 ; i < linierMatrix.length; i++ ){
                 let lowerOrderEvent = linierMatrix[i];
                 for(let u = i + 1; linierMatrix.length > u; u++){
                     let higherOrderEvent = linierMatrix[u];
-                    if(higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || lowerOrderEvent.eventStart.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
+                    if(lowerOrderEvent.eventStop.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop) || lowerOrderEvent.eventStart.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
                         if(higherOrderEvent.maxDivision > lowerOrderEvent.maxDivision){
                             lowerOrderEvent.maxDivision = higherOrderEvent.maxDivision;
                         }
-                    }else if(higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || lowerOrderEvent.eventStop.isBetween(higherOrderEvent.eventStart,higherOrderEvent.eventStop)){
+                    }else if(higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) || higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)){
                         if(higherOrderEvent.maxDivision > lowerOrderEvent.maxDivision){
                             lowerOrderEvent.maxDivision = higherOrderEvent.maxDivision;
                         }
@@ -113,7 +151,8 @@ export default class SchedulerManager{
             resolve(linierMatrix)
         })
     }
-
+    // higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) 
+    // higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)
     static makeLiniermatrix(partitionMatrix){
         return new Promise((resolve,reject)=>{
             const linierMatrix = [];
@@ -131,6 +170,10 @@ export default class SchedulerManager{
     }
     static sortByEventStart(schedules){
         return schedules.sort((a, b) => a.eventStart.diff(b.eventStart));
+    }
+
+    static sortByOrder(schedules){
+        return schedules.sort((a, b) => a.orderd - b.orderd)
     }
 
     static makePartitionMatrix(sortedArray){

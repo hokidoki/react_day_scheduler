@@ -4,53 +4,53 @@ import SchedulerDrawContainer from './schedulerPage/schedulerDrawContainer'
 
 export default class App extends Component {
 
-  // state = {
-  //   schedules : [{
-  //     eventStart : "2020-02-01 00:00",
-  //     eventStop : "2020-02-01 07:00",
-  //     eventTitle : "a"
-  // },{
-  //     eventStart : "2020-02-01 11:30",
-  //     eventStop : "2020-02-01 12:30",
-  //     eventTitle : "b"
-  // },{
-  //     eventStart : "2020-02-01 08:20",
-  //     eventStop : "2020-02-01 08:50",
-  //     eventTitle : "c"
-  // },{
-  //     eventStart : "2020-02-01 17:00",
-  //     eventStop : "2020-02-01 17:20",
-  //     eventTitle : "d"
-  // },{
-  //     eventStart : "2020-02-01 12:40",
-  //     eventStop : "2020-02-01 16:20",
-  //     eventTitle : "e"
-  // },{
-  //     eventStart : "2020-02-01 11:30",
-  //     eventStop : "2020-02-01 13:21",
-  //     eventTitle : "f"
-  // },{
-  //     eventStart : "2020-02-01 16:00",
-  //     eventStop : "2020-02-01 18:21",
-  //     eventTitle : "g"
-  // },{
-  //     eventStart : "2020-02-01 10:40",
-  //     eventStop : "2020-02-01 10:41",
-  //     eventTitle : "h"
-  // },{
-  //     eventStart : "2020-02-01 13:31",
-  //     eventStop : "2020-02-01 14:50",
-  //     eventTitle : "i"
-  // },{
-  //     eventStart : "2020-02-01 09:00",
-  //     eventStop : "2020-02-01 18:00",
-  //     eventTitle : "j"
-  // }]
-  // }
-
-  state ={
-    schedules : []
+  state = {
+    schedules : [{
+      eventStart : "2020-02-01 00:00",
+      eventStop : "2020-02-01 07:00",
+      eventTitle : "a"
+  },{
+      eventStart : "2020-02-01 11:30",
+      eventStop : "2020-02-01 12:30",
+      eventTitle : "b"
+  },{
+      eventStart : "2020-02-01 08:20",
+      eventStop : "2020-02-01 08:50",
+      eventTitle : "c"
+  },{
+      eventStart : "2020-02-01 17:00",
+      eventStop : "2020-02-01 17:20",
+      eventTitle : "d"
+  },{
+      eventStart : "2020-02-01 12:40",
+      eventStop : "2020-02-01 16:20",
+      eventTitle : "e"
+  },{
+      eventStart : "2020-02-01 11:30",
+      eventStop : "2020-02-01 13:21",
+      eventTitle : "f"
+  },{
+      eventStart : "2020-02-01 16:00",
+      eventStop : "2020-02-01 18:21",
+      eventTitle : "g"
+  },{
+      eventStart : "2020-02-01 10:40",
+      eventStop : "2020-02-01 10:41",
+      eventTitle : "h"
+  },{
+      eventStart : "2020-02-01 13:31",
+      eventStop : "2020-02-01 14:50",
+      eventTitle : "i"
+  },{
+      eventStart : "2020-02-01 09:00",
+      eventStop : "2020-02-01 18:00",
+      eventTitle : "j"
+  }]
   }
+
+  // state ={
+  //   schedules : []
+  // }
   delete = ()=>{
 
   }
@@ -63,8 +63,15 @@ export default class App extends Component {
     })
   }
 
-  modify = ()=>{
-
+  modify = (newEvent,oldEvent)=>{
+    // console.log(newEvent);
+    // console.log(oldEvent);
+    const newSchedules = this.state.schedules.filter((schedule)=>{
+      return schedule !== oldEvent;
+    })
+    this.setState({
+      schedules : [...newSchedules,newEvent]
+    })
   }
   render() {
     
@@ -72,6 +79,7 @@ export default class App extends Component {
       <div>
         <SchedulerDrawContainer schedules={this.state.schedules}
           save = {this.save}
+          modify = {this.modify}
         ></SchedulerDrawContainer>
         {/* <ScheduleContainer></ScheduleContainer> */}
       </div>

@@ -69,7 +69,7 @@ export default class EventModificationModal extends Component {
             eventTitle : eventTitle,
             eventMemo : eventMemo
         });
-        this.props.save(event,this.props.schedule.newEvent)
+        this.props.save(this.props.schedule.newEvent,event)
     }
 
     deleteButtonClick = ()=>{

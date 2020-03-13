@@ -207,12 +207,11 @@ export default class SchedulerDrawContainer extends Component {
         })
     }
 
-    saveNewEvent = (newEvent,isNewEvent) =>{
+    saveNewEvent = (isNewEvent,event) =>{
         if(isNewEvent === true){
-            console.log(newEvent);
-            this.props.save(newEvent);            
+            this.props.save(event);            
         }else{
-            this.props.modify(newEvent)
+            this.props.modify(event,this.props.schedules[event.index]);
         }
         this.closeModifyModal();
     }
@@ -234,12 +233,10 @@ export default class SchedulerDrawContainer extends Component {
         const { drawNewSchedule,modifyEvent,maxDivision} = this.state;
         const schedules = this.state.schedules.map((event)=>{
             const left = 100 * (event.orderd / maxDivision);
-            const maxWidth = 100 /maxDivision;
-
             return <Schedule 
                 onClick={()=> this.showEventDetail(event)}
                 zIndex={drawNewSchedule !== null || modifyEvent !==null ? 0 : 1}
-                style={{'maxWidth' :`${maxWidth}%`,'top' : `${event.top}%`, 'width' : `${event.width}%`,'height' : `${event.height}%`,'left' : `${left}%`}}
+                style={{'maxWidth' : `${event.maxWidth}%`,'top' : `${event.top}%`, 'width' : `${event.width}%`,'height' : `${event.height}%`,'left' : `${left}%`}}
             >
                 <label>{event.title}</label>
                 <label>{event.eventStart.format("YYYY-MM-DD HH:mm")}</label>

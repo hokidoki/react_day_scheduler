@@ -1,26 +1,52 @@
 {
-  "name": "react-scheduleer",
-  "version": "0.1.0",
-  "private": true,
+  "name": "react-day-scheduler",
+  "version": "0.3.1-beta.1",
+  "private": false,
+  "description": "it's automatic react-day-scheduler ",
+  "keywords": [
+    "scheduler",
+    "automatic",
+    "calculate width",
+    "automatically sort event"
+  ],
+  "author": {
+    "name": "lee jong ho",
+    "email": "substantiation@naver.com",
+    "url": "https://hokeydokey.tistory.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hokidoki/react_scheduler"
+  },
+  "files": [
+    "dist",
+    "lib",
+    "!dist/test"
+  ],
   "dependencies": {
-    "@material-ui/core": "^4.9.5",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
     "moment": "^2.24.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-material-ui": "^0.0.1",
     "react-modal": "^3.11.2",
     "react-scripts": "3.4.0",
-    "styled-components": "^5.0.1"
+    "styled-components": "^5.0.1",
+    "@material-ui/core": "^4.9.5"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "publish:npm": "rm -rf dist && mkdir dist && babel lib -d dist --copy-files"
   },
+  "babel" : {
+    "plugins": ["@babel/plugin-proposal-class-properties"],
+    "presets" : [
+      "@babel/preset-react"
+    ]
+  }
+  ,
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -35,5 +61,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.8.3"
   }
 }

@@ -1,0 +1,57 @@
+.SchedulerContainer{
+    width: 100%;
+}
+
+.timeJoneContainer{
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: row;
+}
+
+
+.DrawingSchedulBoard{
+    min-height: 800px;
+    position: relative;
+}
+
+.timeJone{
+    display: flex;
+    flex-direction: column;
+    flex-basis: 70px;
+}
+
+.time{
+    display: inline-block;
+    min-height: 50px;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    /* flex-basis: 60px; */
+}
+
+.scheduleTable{
+    display: inline-block;
+    height: 4.166%;
+    min-height: 100px;
+    border-bottom: 1px solid black;
+    flex-grow: 1;
+}
+
+.scheduleJone{
+    position: relative;
+    flex-grow: 1;
+}
+
+#newEventTime{
+    margin-left: 15px;
+}
+
+.drawSchedule{
+    border : 1px solid black;
+    background-color: rgba(155, 155, 155, 0.603);
+    min-height : 20px;
+}
+
+.schedule{
+    min-height : 20px;
+}

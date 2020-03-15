@@ -1,0 +1,39 @@
+.boundary{
+    margin : 0 5px;
+    display: inline-block;
+}
+.eventTime{
+    margin-left: 20px;
+}
+
+.eventTimePlaceHolder{
+    display: inline-block;
+    width: 100px;
+    margin-right: 10px;
+}
+
+#titleModify{
+    width: 405px;
+}
+
+#eventTitleBox{
+    line-height: 32px;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+#eventMemoTextArea{
+    width: 380px;
+}
+
+.modalButtonContainer{
+    position: absolute;
+    bottom: 15px;
+    width: 90%;
+}
+
+.mainModalButtonContainer{
+    position: absolute;
+    display: inline-block;
+    right: 0px;
+}

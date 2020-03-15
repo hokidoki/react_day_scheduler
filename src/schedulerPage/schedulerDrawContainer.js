@@ -17,9 +17,6 @@ const DrawingSchedule = styled.div.attrs(props => ({
     top : ${props => props.top}px;
     box-sizing : border-box;
     width : 100%;
-    border : 1px solid black;
-    background-color: rgba(155, 155, 155, 0.603);
-    min-height : 20px;
 `
 
 const Schedule = styled.div.attrs(props => ({
@@ -29,14 +26,7 @@ const Schedule = styled.div.attrs(props => ({
 }))`
     position : absolute;
     box-sizing: border-box;
-    min-height : 20px;
-    background-color: rgba(155, 155, 155, 0.603);
-    border : 1px solid black;
     z-index : 1;
-    &:hover{
-        background-color: green;
-    }
-
 `
 
 export default class SchedulerDrawContainer extends Component {
@@ -45,14 +35,15 @@ export default class SchedulerDrawContainer extends Component {
         super(props);
         this.DrawingBoard = React.createRef();
         this.SchedulerContainer = React.createRef();
+        
     }
 
     componentDidMount(){
-        const {today, schedules } = this.props; 
-        SchedulerManager.calculate(schedules,today,this.updateSchedules);
+        const { schedules } = this.props; 
+        SchedulerManager.calculate(schedules,this.state.today,this.updateSchedules);
     }
     getSnapshotBeforeUpdate(prevProps, prevState) {
-        if(prevProps.schedules !== this.props.schedules){
+        if(prevProps.schedules !== this.props.schedules || prevProps.today !== this.props.today){
             return true
         }
         return false;
@@ -61,17 +52,16 @@ export default class SchedulerDrawContainer extends Component {
       componentDidUpdate(prevProps, prevState, snapshot) {
         if (snapshot === true) {
           const {today, schedules } = this.props; 
-        SchedulerManager.calculate(schedules,today,this.updateSchedules);
+        SchedulerManager.calculate(schedules,moment(today),this.updateSchedules);
+        this.setState({
+            today : moment(this.props.today)
+        })
         }
       }
+
     static defaultProps = {
-        today : moment("2020-02-01,00:00:00","YYYY-MM-DD,HH:mm:ss").clone(),
-        schedule: [{
-            eventStart: moment('2020-02-02 13:00:',"YYYY-MM-DD HH:mm"),
-            eventStop: moment('2020-02-02 15:00',"YYYY-MM-DD HH:mm"),
-            eventTitle: "dummyTitle",
-            eventMemo: "dummyEventMemo"
-        }],
+        today : moment().clone(),
+        schedule: [],
         modalPlaceholder : {
             start : "Event start at :",
             stop : "Event stop at :",
@@ -82,6 +72,7 @@ export default class SchedulerDrawContainer extends Component {
     }
 
     state = {
+        today : moment(this.props.today),
         modifyEvent: null,
         drawNewSchedule: null,
         schedules: [],
@@ -106,7 +97,7 @@ export default class SchedulerDrawContainer extends Component {
 
     drawNewEventStart = (e) => {
         if (this.state.drawNewSchedule === null) {
-            const {today} = this.props;
+            const {today} = this.state;
             const min = this.getTimePartitionHeight(60);
            
             const mouseDownPosition = e.nativeEvent.clientY - this.DrawingBoard.current.getBoundingClientRect().top;
@@ -131,7 +122,7 @@ export default class SchedulerDrawContainer extends Component {
 
     drawNewEventStop = (e) => {
         if (this.state.drawNewSchedule !== null) {
-            const {today} = this.props;
+            const {today} = this.state;
             const min = this.getTimePartitionHeight(60);
             const mouseMovePosition = e.nativeEvent.clientY - this.DrawingBoard.current.getBoundingClientRect().top;
             const time = (mouseMovePosition/min); 
@@ -156,7 +147,7 @@ export default class SchedulerDrawContainer extends Component {
 
     drawing = (e) => {
         if (this.state.drawNewSchedule !== null) {
-            const {today} = this.props;
+            const {today} = this.state;
             const min = this.getTimePartitionHeight(60);
             const mouseMovePosition = e.nativeEvent.clientY - this.DrawingBoard.current.getBoundingClientRect().top;
             const time = (mouseMovePosition/min); 
@@ -223,6 +214,7 @@ export default class SchedulerDrawContainer extends Component {
         const schedules = this.state.schedules.map((event)=>{
             const left = 100 * (event.orderd / maxDivision);
             return <Schedule 
+                className="schedule"
                 onClick={()=> this.showEventDetail(event)}
                 zIndex={drawNewSchedule !== null || modifyEvent !==null ? 0 : 1}
                 style={{'maxWidth' : `${event.maxWidth}%`,'top' : `${event.top}%`, 'width' : `${event.width}%`,'height' : `${event.height}%`,'left' : `${left}%`}}
@@ -235,7 +227,7 @@ export default class SchedulerDrawContainer extends Component {
         return (
             <div className="SchedulerContainer" ref={this.SchedulerContainer}>
                 { modifyEvent != null ? 
-                <EventModiModal today={this.props.today}
+                <EventModiModal today={this.state.today}
                     modifyCancel = {this.modifyCancel}
                     save={this.saveNewEvent}
                     delete={this.deleteEvent}
@@ -255,7 +247,7 @@ export default class SchedulerDrawContainer extends Component {
                             onMouseMove={this.drawing}
                             onMouseUp={this.drawNewEventStop}
                             style={{"zIndex" : `${drawNewSchedule !== null ? (modifyEvent !== null ? 0 : 2 ): 0}`}}>
-                            {drawNewSchedule !== null ? <DrawingSchedule heigth={drawNewSchedule.heigth} top={drawNewSchedule.mouseDownPosition}> 
+                            {drawNewSchedule !== null ? <DrawingSchedule heigth={drawNewSchedule.heigth} top={drawNewSchedule.mouseDownPosition} className="drawSchedule"> 
                                 <label>{drawNewSchedule.eventTitle}</label>
                                 <label id="newEventTime">{drawNewSchedule.eventStart.format("HH:mm")}-{drawNewSchedule.eventStop.format("HH:mm")}</label>
                             </DrawingSchedule>

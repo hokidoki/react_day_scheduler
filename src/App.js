@@ -98,6 +98,7 @@ export default class App extends Component {
     return (
       <div>
         <SchedulerDrawContainer schedules={this.state.schedules}
+          today = {"2020-02-01"}
           save = {this.save}
           modify = {this.modify}
           delete = {this.delete}

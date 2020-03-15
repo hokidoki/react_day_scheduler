@@ -15,6 +15,7 @@ const DrawingSchedule = styled.div.attrs(props => ({
 }))`
     position : absolute;
     top : ${props => props.top}px;
+    box-sizing : border-box;
     width : 100%;
     border : 1px solid black;
     background-color: rgba(155, 155, 155, 0.603);
@@ -28,7 +29,7 @@ const Schedule = styled.div.attrs(props => ({
 }))`
     position : absolute;
     box-sizing: border-box;
-    min-height : 5px;
+    min-height : 20px;
     background-color: rgba(155, 155, 155, 0.603);
     border : 1px solid black;
     z-index : 1;
@@ -37,14 +38,6 @@ const Schedule = styled.div.attrs(props => ({
     }
 
 `
-// top={event.top}
-//                 height={event.height}
-//                 width ={event.width}
-//                 left={left}
-// top : ${props => props.top}%;
-// width : ${props => props.width}%;   
-// left : ${props => props.left}%;
-// height : ${props => props.height}%;
 
 export default class SchedulerDrawContainer extends Component {
 
@@ -59,21 +52,13 @@ export default class SchedulerDrawContainer extends Component {
         SchedulerManager.calculate(schedules,today,this.updateSchedules);
     }
     getSnapshotBeforeUpdate(prevProps, prevState) {
-        // Are we adding new items to the list?
-        // Capture the scroll position so we can adjust scroll later.
         if(prevProps.schedules !== this.props.schedules){
-            // const {today, schedules } = this.props; 
-            // SchedulerManager.calculate(schedules,today,this.updateSchedules);
             return true
         }
-        
         return false;
       }
 
       componentDidUpdate(prevProps, prevState, snapshot) {
-        // If we have a snapshot value, we've just added new items.
-        // Adjust scroll so these new items don't push the old ones out of view.
-        // (snapshot here is the value returned from getSnapshotBeforeUpdate)
         if (snapshot === true) {
           const {today, schedules } = this.props; 
         SchedulerManager.calculate(schedules,today,this.updateSchedules);
@@ -87,6 +72,10 @@ export default class SchedulerDrawContainer extends Component {
             eventTitle: "dummyTitle",
             eventMemo: "dummyEventMemo"
         }],
+        modalPlaceholder : {
+            start : "Event start at :",
+            stop : "Event stop at :",
+        },
         save : ()=>{},
         delete : ()=>{},
         modify : ()=>{}
@@ -251,6 +240,7 @@ export default class SchedulerDrawContainer extends Component {
                     save={this.saveNewEvent}
                     delete={this.deleteEvent}
                     schedule={modifyEvent}
+                    placeholder={this.props.modalPlaceholder}
                 /> : null}
                 <div className="timeJoneContainer">
                     <div className="timeJone">

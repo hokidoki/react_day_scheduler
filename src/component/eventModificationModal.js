@@ -22,11 +22,9 @@ const customStyles = {
 export default class EventModificationModal extends Component {
 
     static defaultProps = {
-        placeHolder: {
-            eventStart: "Event start at :",
-            eventStop: "Event stop at :",
-            eventTitle: "Title",
-            eventMemo: "Memo"
+        placeholder: {
+            start: "Event start at :",
+            stop: "Event stop at :",
         }
     }
 
@@ -74,7 +72,7 @@ export default class EventModificationModal extends Component {
 
     deleteButtonClick = ()=>{
         const {schedule} = this.props;
-        this.props.delete(schedule);
+        this.props.delete(schedule.index);
     }
 
 
@@ -87,14 +85,14 @@ export default class EventModificationModal extends Component {
                     style={customStyles}
                 >
                     <EventTime
-                        placeHolder={this.props.placeHolder.eventStart}
+                        placeHolder={this.props.placeholder.start}
                         changeEventTime={this.changeEventTime}
                         type="eventStart"
                         today={this.props.today}
                         event={this.state.eventStart.clone()}
                     />
                     <EventTime
-                        placeHolder={this.props.placeHolder.eventStop}
+                        placeHolder={this.props.placeholder.stop}
                         changeEventTime={this.changeEventTime}
                         type="eventStop"
                         today={this.props.today}

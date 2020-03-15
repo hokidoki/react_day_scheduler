@@ -13,7 +13,21 @@ export default class SchedulerManager{
             })
         });
 
-        const sortededByEventStopSchedules = this.sortByEventStop(unSortedSchedules);        
+        const filterdScheduls = unSortedSchedules.filter((event)=>{
+            const eventStart = event.eventStart;
+            const eventStop = event.eventStop;
+
+            const tomorrow = today.clone().add(1,'d').add(-1,'m');
+            if(eventStart.isAfter(tomorrow) && eventStop.isAfter(tomorrow)){
+                return false;
+            }else if(eventStart.isBefore(today) && eventStop.isBefore(today)){
+                return false;
+            }else{
+                return true;
+            }
+        })
+
+        const sortededByEventStopSchedules = this.sortByEventStop(filterdScheduls);        
         const sortededByEventStartSchedules = this.sortByEventStart(sortededByEventStopSchedules);
         const partitionMatrix = await this.makePartitionMatrix(sortededByEventStartSchedules.slice());
         const linierMatrix = await this.makeLiniermatrix(partitionMatrix.slice());
@@ -132,7 +146,6 @@ export default class SchedulerManager{
                     }
                 }
             }
-            // higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)
             for(let i = 0 ; i < linierMatrix.length; i++ ){
                 let lowerOrderEvent = linierMatrix[i];
                 for(let u = i + 1; linierMatrix.length > u; u++){
@@ -151,8 +164,6 @@ export default class SchedulerManager{
             resolve(linierMatrix)
         })
     }
-    // higherOrderEvent.eventStop.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop) 
-    // higherOrderEvent.eventStart.isBetween(lowerOrderEvent.eventStart,lowerOrderEvent.eventStop)
     static makeLiniermatrix(partitionMatrix){
         return new Promise((resolve,reject)=>{
             const linierMatrix = [];

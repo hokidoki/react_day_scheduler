@@ -8,52 +8,63 @@ export default class App extends Component {
     schedules : [{
       eventStart : "2020-02-01 00:00",
       eventStop : "2020-02-01 07:00",
-      eventTitle : "a"
+      eventTitle : "a",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 11:30",
       eventStop : "2020-02-01 12:30",
-      eventTitle : "b"
+      eventTitle : "b",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 08:20",
       eventStop : "2020-02-01 08:50",
-      eventTitle : "c"
+      eventTitle : "c",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 17:00",
       eventStop : "2020-02-01 17:20",
-      eventTitle : "d"
+      eventTitle : "d",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 12:40",
       eventStop : "2020-02-01 16:20",
-      eventTitle : "e"
+      eventTitle : "e",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 11:30",
       eventStop : "2020-02-01 13:21",
-      eventTitle : "f"
+      eventTitle : "f",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 16:00",
       eventStop : "2020-02-01 18:21",
-      eventTitle : "g"
+      eventTitle : "g",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 10:40",
       eventStop : "2020-02-01 10:41",
-      eventTitle : "h"
+      eventTitle : "h",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 13:31",
       eventStop : "2020-02-01 14:50",
-      eventTitle : "i"
+      eventTitle : "i",
+      eventMemo : "hello"
   },{
       eventStart : "2020-02-01 09:00",
       eventStop : "2020-02-01 18:00",
-      eventTitle : "j"
-  }]
+      eventTitle : "j",
+      eventMemo : "hello"
+  }],
+  modalPlaceholder : {
+    start : "Event start at :",
+    stop : "Event stop at :"
+  }
   }
 
   // state ={
   //   schedules : []
   // }
-  delete = ()=>{
-
-  }
 
   save = (newEvent) => {
     const prevState = this.state.schedules;
@@ -73,6 +84,15 @@ export default class App extends Component {
       schedules : [...newSchedules,newEvent]
     })
   }
+
+  delete = (removedEvent)=>{
+    this.setState({
+      schedules : this.state.schedules.filter((event)=>{
+        return removedEvent !== event
+      })
+    })
+  }
+
   render() {
     
     return (
@@ -80,6 +100,8 @@ export default class App extends Component {
         <SchedulerDrawContainer schedules={this.state.schedules}
           save = {this.save}
           modify = {this.modify}
+          delete = {this.delete}
+          modalPlaceholder = {this.state.modalPlaceholder}
         ></SchedulerDrawContainer>
         {/* <ScheduleContainer></ScheduleContainer> */}
       </div>
